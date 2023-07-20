@@ -9,7 +9,9 @@
         "I2C",
         "ADC",
         "DAC",
-        "PWM"
+        "PWM",
+        "SDCard",
+        "Ethernet"
     ],
     "id": "VK-RA6M5",
     "images": [

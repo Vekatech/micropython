@@ -35,6 +35,7 @@ BSP_DONT_REMOVE const fsp_vector_t g_vector_table[BSP_ICU_VECTOR_MAX_ENTRIES] BS
     [28] = sdhimmc_accs_isr,         /* SDHIMMC0 ACCS (Card access) */
     [29] = sdhimmc_card_isr,         /* SDHIMMC0 CARD (Card detect) */
     [30] = sdhimmc_dma_req_isr,         /* SDHIMMC0 DMA REQ (DMA transfer request) */
+    [31] = ether_eint_isr,         /* EDMAC0 EINT (EDMAC 0 interrupt) */
 };
 const bsp_interrupt_event_t g_interrupt_event_link_select[BSP_ICU_VECTOR_MAX_ENTRIES] =
 {
@@ -69,5 +70,6 @@ const bsp_interrupt_event_t g_interrupt_event_link_select[BSP_ICU_VECTOR_MAX_ENT
     [28] = BSP_PRV_IELS_ENUM(EVENT_SDHIMMC0_ACCS),         /* SDHIMMC0 ACCS (Card access) */
     [29] = BSP_PRV_IELS_ENUM(EVENT_SDHIMMC0_CARD),         /* SDHIMMC0 CARD (Card detect) */
     [30] = BSP_PRV_IELS_ENUM(EVENT_SDHIMMC0_DMA_REQ),         /* SDHIMMC0 DMA REQ (DMA transfer request) */
+    [31] = BSP_PRV_IELS_ENUM(EVENT_EDMAC0_EINT),         /* EDMAC0 EINT (EDMAC 0 interrupt) */
 };
 #endif

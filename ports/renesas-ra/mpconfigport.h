@@ -67,6 +67,7 @@
 #endif
 
 // Python internal features
+#define MICROPY_TRACKED_ALLOC       (MICROPY_SSL_MBEDTLS)
 #define MICROPY_READER_VFS          (1)
 #define MICROPY_ENABLE_GC           (1)
 #define MICROPY_ENABLE_EMERGENCY_EXCEPTION_BUF (1)

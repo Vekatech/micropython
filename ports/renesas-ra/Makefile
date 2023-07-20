@@ -25,6 +25,9 @@ include $(BOARD_DIR)/mpconfigboard.mk
 
 USE_FSP_LPM ?= 1
 USE_FSP_QSPI ?= 0
+USE_FSP_SDHI ?= 0
+USE_FSP_ETH ?= 0
+USE_FSP_SCE ?= 0
 FSP_BOARD_NAME ?= $(shell echo $(BOARD) | tr '[:upper:]' '[:lower:]')
 
 # Files that are generated and needed before the QSTR build.
@@ -68,8 +71,12 @@ INC += -I$(TOP)/$(HAL_DIR)
 INC += -I$(TOP)/$(HAL_DIR)/ra/fsp/inc
 INC += -I$(TOP)/$(HAL_DIR)/ra/fsp/inc/api
 INC += -I$(TOP)/$(HAL_DIR)/ra/fsp/inc/instances
+INC += -I$(TOP)/$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/inc/api
+INC += -I$(TOP)/$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/inc/instances
+INC += -I$(TOP)/$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/private/inc
 INC += -I$(TOP)/$(HAL_DIR)/ra/fsp/src/bsp/cmsis/Device/RENESAS/Include
-#INC += -Ilwip_inc
+INC += -Ilwip_inc
+INC += -Imbedtls
 ifeq ($(CMSIS_MCU),$(filter $(CMSIS_MCU),RA4M1 RA4W1 RA6M1 RA6M2 RA6M5))
 INC += -Ira
 endif
@@ -279,6 +286,7 @@ SRC_C += \
 	ra_hal.c \
 	ra_it.c \
 	mphalport.c \
+	mpnetworkport.c \
 	mpthreadport.c \
 	irq.c \
 	pendsv.c \
@@ -301,6 +309,9 @@ SRC_C += \
 	machine_rtc.c \
 	machine_sdcard.c \
 	modmachine.c \
+	network_lan.c \
+	eth.c \
+	rng.c \
 	extint.c \
 	usrsw.c \
 	flash.c \
@@ -356,6 +367,41 @@ HAL_SRC_C += $(HAL_DIR)/ra/fsp/src/r_sdhi/r_sdhi.c \
 	$(HAL_DIR)/ra/fsp/src/r_dtc/r_dtc.c
 endif
 
+ifeq ($(USE_FSP_ETH), 1)
+CFLAGS += -DUSE_FSP_ETH
+HAL_SRC_C += $(HAL_DIR)/ra/fsp/src/r_ether_phy/targets/ICS1894/r_ether_phy_target_ics1894.c \
+	$(HAL_DIR)/ra/fsp/src/r_ether_phy/r_ether_phy.c \
+	$(HAL_DIR)/ra/fsp/src/r_ether/r_ether.c
+endif
+
+ifeq ($(USE_FSP_SCE), 1)
+CFLAGS += -DUSE_FSP_SCE
+HAL_SRC_C += $(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/public/r_sce.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/public/r_sce_aes.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/public/r_sce_sha.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/public/r_sce_ecc.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/private/r_sce_private.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_p00.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_p20.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_p26.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_p40.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_p81.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_p82.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_p92.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func040.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func048.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func050.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func051.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func052.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func053.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func054.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func100.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func101.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func102.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_func103.c \
+	$(HAL_DIR)/ra/fsp/src/r_sce_protected/crypto_procedures_protected/src/sce9/primitive/r_sce_subprc01.c
+endif
+
 ifeq ($(USE_FSP_LPM), 1)
 CFLAGS += -DUSE_FSP_LPM
 HAL_SRC_C += $(HAL_DIR)/ra/fsp/src/r_lpm/r_lpm.c
@@ -392,7 +438,10 @@ HAL_SRC_C += $(addprefix ra/,\
 	ra_gpt.c \
 	ra_utils.c \
 	)
+endif
 
+ifeq ($(MICROPY_SSL_MBEDTLS),1)
+LIB_SRC_C += mbedtls/mbedtls_port.c
 endif
 
 OBJ += $(PY_O)

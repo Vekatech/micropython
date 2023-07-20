@@ -6,7 +6,7 @@ extern "C" {
 #endif
 /* Number of interrupts allocated */
 #ifndef VECTOR_DATA_IRQ_COUNT
-#define VECTOR_DATA_IRQ_COUNT    (31)
+#define VECTOR_DATA_IRQ_COUNT    (32)
 #endif
 /* ISR prototypes */
 void sci_uart_rxi_isr(void);
@@ -28,6 +28,7 @@ void iic_master_eri_isr(void);
 void sdhimmc_accs_isr(void);
 void sdhimmc_card_isr(void);
 void sdhimmc_dma_req_isr(void);
+void ether_eint_isr(void);
 
 /* Vector table allocations */
 #define VECTOR_NUMBER_SCI6_RXI ((IRQn_Type)0)  /* SCI6 RXI (Received data full) */
@@ -92,6 +93,8 @@ void sdhimmc_dma_req_isr(void);
 #define SDHIMMC0_CARD_IRQn          ((IRQn_Type)29)  /* SDHIMMC0 CARD (Card detect) */
 #define VECTOR_NUMBER_SDHIMMC0_DMA_REQ ((IRQn_Type)30)  /* SDHIMMC0 DMA REQ (DMA transfer request) */
 #define SDHIMMC0_DMA_REQ_IRQn          ((IRQn_Type)30)  /* SDHIMMC0 DMA REQ (DMA transfer request) */
+#define VECTOR_NUMBER_EDMAC0_EINT ((IRQn_Type)31)  /* EDMAC0 EINT (EDMAC 0 interrupt) */
+#define EDMAC0_EINT_IRQn          ((IRQn_Type)31)  /* EDMAC0 EINT (EDMAC 0 interrupt) */
 #ifdef __cplusplus
 }
 #endif

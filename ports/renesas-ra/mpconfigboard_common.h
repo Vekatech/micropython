@@ -49,6 +49,46 @@
 #define MICROPY_PY_PYB_LEGACY (1)
 #endif
 
+// If MICROPY_PY_LWIP is defined, add network support
+#if MICROPY_PY_LWIP
+#define MICROPY_HW_ENABLE_RNG               (1)
+#define MICROPY_PY_NETWORK                  (1)
+#define MICROPY_PY_USOCKET                  (1)
+// #define MICROPY_PY_UHASHLIB_SHA1            (1)
+
+#define MICROPY_HW_ETH_MDC                  (1)
+// Prevent the "LWIP task" from running.
+#define MICROPY_PY_LWIP_ENTER
+#define MICROPY_PY_LWIP_REENTER
+#define MICROPY_PY_LWIP_EXIT
+#endif
+
+#define MICROPY_PY_LWIP_SOCK_RAW    (MICROPY_PY_LWIP)
+#define MICROPY_PY_UWEBSOCKET       (MICROPY_PY_LWIP)
+#define MICROPY_PY_WEBREPL          (MICROPY_PY_LWIP)
+
+#if MICROPY_PY_NETWORK
+#ifndef MICROPY_PY_NETWORK_HOSTNAME_DEFAULT
+#define MICROPY_PY_NETWORK_HOSTNAME_DEFAULT MICROPY_HW_BOARD_NAME
+#endif
+
+#ifndef MICROPY_BOARD_NETWORK_INTERFACES
+#define MICROPY_BOARD_NETWORK_INTERFACES
+#endif
+
+#if defined(MICROPY_HW_ETH_MDC)
+extern const struct _mp_obj_type_t network_lan_type;
+#define MICROPY_HW_NIC_ETH                  { MP_ROM_QSTR(MP_QSTR_LAN), MP_ROM_PTR(&network_lan_type) },
+#else
+#define MICROPY_HW_NIC_ETH
+#endif
+
+#define MICROPY_PORT_NETWORK_INTERFACES \
+    MICROPY_HW_NIC_ETH  \
+    MICROPY_BOARD_NETWORK_INTERFACES \
+
+#endif
+
 // Whether machine.bootloader() will enter the bootloader via reset, or direct jump.
 #ifndef MICROPY_HW_ENTER_BOOTLOADER_VIA_RESET
 #define MICROPY_HW_ENTER_BOOTLOADER_VIA_RESET (1)

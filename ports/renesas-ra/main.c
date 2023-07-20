@@ -41,9 +41,16 @@
 #include "lib/littlefs/lfs1_util.h"
 #include "lib/littlefs/lfs2.h"
 #include "lib/littlefs/lfs2_util.h"
+#include "extmod/modnetwork.h"
 #include "extmod/vfs.h"
 #include "extmod/vfs_fat.h"
 #include "extmod/vfs_lfs.h"
+
+#if MICROPY_PY_LWIP
+#include "lwip/init.h"
+#include "lwip/apps/mdns.h"
+#include "lwip/memp.h"
+#endif
 
 #include "boardctrl.h"
 #include "systick.h"
@@ -239,6 +246,20 @@ int main(void) {
     storage_init();
     #endif
 
+    #if MICROPY_PY_LWIP
+    // lwIP doesn't allow to reinitialise itself by subsequent calls to this function
+    // because the system timeout list (next_timeout) is only ever reset by BSS clearing.
+    // So for now we only init the lwIP stack once on power-up.
+    #if MICROPY_HW_ENABLE_RNG
+    R_SCE_Open(&g_sce_ctrl, &g_sce_cfg);
+    #endif
+    lwip_init();
+    #if LWIP_MDNS_RESPONDER
+    mdns_resp_init();
+    #endif
+    systick_enable_dispatch(SYSTICK_DISPATCH_LWIP, mod_network_lwip_poll_wrapper);
+    #endif
+
     #if defined(MICROPY_HW_UART_REPL)
     // Set up a UART REPL using a statically allocated object
     machine_uart_repl_obj.base.type = &machine_uart_type;
@@ -337,6 +358,10 @@ soft_reset:
     // or whose initialisation can be safely deferred until after running
     // boot.py.
 
+    #if MICROPY_PY_NETWORK
+    mod_network_init();
+    #endif
+
     // At this point everything is fully configured and initialised.
 
     // Run main.py (or whatever else a board configures at this stage).
@@ -376,6 +401,10 @@ soft_reset_exit:
     if (state.log_soft_reset) {
         mp_printf(&mp_plat_print, "MPY: soft reboot\n");
     }
+
+    #if MICROPY_PY_NETWORK
+    mod_network_deinit();
+    #endif
 
     soft_timer_deinit();
     timer_deinit();
