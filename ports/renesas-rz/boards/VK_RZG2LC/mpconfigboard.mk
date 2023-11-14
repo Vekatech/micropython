@@ -1,0 +1,8 @@
+CMSIS_MCU = RZG2LC
+MCU_SERIES = m33
+LD_FILES = boards/VK_RZG2LC/vk_rzg2lc.ld
+
+# MicroPython settings
+#MICROPY_VFS_FAT = 1
+
+CFLAGS+=-DDEFAULT_DBG_CH=3

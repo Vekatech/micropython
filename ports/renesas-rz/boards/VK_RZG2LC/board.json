@@ -1,0 +1,17 @@
+{
+    "deploy": [
+        "../deploy.md"
+    ],
+    "docs": "",
+    "features": [
+        "DAC"
+    ],
+    "images": [
+        "VK-RZG2LC.jpg"
+    ],
+    "mcu": "rzg2lc",
+    "product": "VK-RZG2LC",
+    "thumbnail": "",
+    "url": "https://vekatech.com",
+    "vendor": "Vekatech"
+}
